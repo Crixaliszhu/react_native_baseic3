@@ -26,7 +26,8 @@ import {
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import {showVersion, VERSION} from "./src/pages/module";
-import {thisVar, ToolVersion} from "./start/common/utils.ts";
+import {thisVar, ToolType, ToolVersion} from "./start/common/utils.ts";
+import {getDetailInfo} from "./src/pages/PromiseModule/utils.ts";
 
 type SectionProps = PropsWithChildren<{
     title: string;
@@ -90,7 +91,9 @@ function App(): React.JSX.Element {
     console.log('entity: ', entity)
 
     const click = () => {
-        showVersion('嗨')
+        getDetailInfo().then((info) => {
+            console.log('info ===== ', info)
+        })
     }
 
     return (
