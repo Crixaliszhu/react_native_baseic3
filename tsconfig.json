@@ -1,3 +1,6 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {// 告诉TypeScript编译器如何处理JSX（JavaScript XML）语法: 使用React的相关类型和规则进行处理，以便在编译后的JavaScript代码中正确地生成对应的React元素和组件。
+    "jsx": "react"
+  }
 }
