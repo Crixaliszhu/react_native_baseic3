@@ -5,9 +5,9 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {PropsWithChildren, useRef, useState} from 'react';
 import {
+    Animated,
     Button,
     SafeAreaView,
     ScrollView,
@@ -25,9 +25,8 @@ import {
     LearnMoreLinks,
     ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import {showVersion, VERSION} from "./src/pages/module";
-import {thisVar, ToolType, ToolVersion} from "./start/common/utils.ts";
 import {getDetailInfo} from "./src/pages/PromiseModule/utils.ts";
+import {VERSION} from "./src/pages/module.ts";
 
 type SectionProps = PropsWithChildren<{
     title: string;
@@ -61,39 +60,52 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
     const isDarkMode = useColorScheme() === 'dark';
+    /**
+     * 淡入淡出动画
+     */
+    const fadeAnim = useRef(new Animated.Value(0)).current
+    /**
+     * 滑入滑出动画
+     */
+    const slideAnim = useRef(new Animated.Value(500)).current
 
     const backgroundStyle = {
         backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
-    const sug = {
-        id: '12'
-    } as SuggestEntity
-    const entity = {
-        subUuId: '13241412',
-        // name: '张三',
-        type: '找活卡片',
-    } as DetailEntity
-    const version = VERSION
-    const type = {
-        title: '标题',
-        content: '内容',
-        avatar: '头像',
-    } as ToolType
+    const [showEnable, setShowEnable] = useState(false)
 
-    const toolVe = ToolVersion
-    const thisV = thisVar
-
-    console.log('version: ', version)
-    console.log('thisVar: ', thisV)
-    console.log('toolVersion: ', toolVe)
-    console.log('type: ', type)
-    console.log('entity: ', entity)
 
     const click = () => {
         getDetailInfo().then((info) => {
             console.log('info ===== ', info)
         })
+    }
+
+    /**
+     * 淡入
+     */
+    const fadeIn = () => {
+        Animated.timing(fadeAnim, {toValue: 1, duration: 300, useNativeDriver: false}).start(() => {
+            fadeAnim.setValue(1)
+        })
+    }
+
+    /**
+     * 淡出
+     */
+    const fadeOut = () => {
+        Animated.timing(fadeAnim, {toValue: 0, duration: 300, useNativeDriver: false}).start(() => {
+            fadeAnim.setValue(0)
+        })
+    }
+
+    const slideIn = () => {
+        Animated.timing(slideAnim, {toValue: 200, duration: 300, useNativeDriver: true}).start()
+    }
+
+    const slideOut = () => {
+        Animated.timing(slideAnim, {toValue: 500, duration: 300, useNativeDriver: true}).start()
     }
 
     return (
@@ -106,6 +118,20 @@ function App(): React.JSX.Element {
                 contentInsetAdjustmentBehavior="automatic"
                 style={backgroundStyle}>
                 <Header/>
+                <Animated.View style={{transform: [{translateY: slideAnim}]}}>
+                    <View style={styles.fadeBg}>
+                        <Text style={styles.fadeText}>Fade View</Text>
+                    </View>
+                </Animated.View>
+                <View style={styles.versionBg}>
+                    <Text>Animated</Text>
+                    <Button title={'Animate In'} onPress={slideIn}></Button>
+                </View>
+
+                <View style={styles.versionBg}>
+                    <Text>Animated</Text>
+                    <Button title={'Animate Out'} onPress={slideOut}></Button>
+                </View>
                 <View
                     style={{
                         backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -125,7 +151,7 @@ function App(): React.JSX.Element {
                     </Section>
                     <LearnMoreLinks/>
                     <View style={styles.versionBg}>
-                        <Text>{`版本说明:${version}，版权所有违法必究`}</Text>
+                        <Text>{`版本说明:${VERSION}，版权所有违法必究`}</Text>
                         <Button title={'点击查看'} onPress={click}></Button>
                     </View>
                 </View>
@@ -154,6 +180,16 @@ const styles = StyleSheet.create({
     },
     highlight: {
         fontWeight: '700',
+    },
+    fadeBg: {
+        backgroundColor: '#23fdf3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 12,
+    },
+    fadeText: {
+        fontSize: 30,
+        margin: 30,
     },
 });
 
